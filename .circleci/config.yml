@@ -138,19 +138,20 @@ jobs:
             tar -xvzf release-assets/pskctl_Darwin_amd64.tar.gz
             ./pskctl version | grep ${CIRCLE_TAG}
 
-  smoke test macos-m1:
-    macos:
-      xcode: "14.2.0"
-    resource_class: macos.m1.medium.gen1
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: smoketest MacOS M1 version
-          command: |
-            tar -xvzf release-assets/pskctl_Darwin_arm64.tar.gz
-            ./pskctl version | grep ${CIRCLE_TAG}
+  # not available on free tier
+  # smoke test macos-m1:
+  #   macos:
+  #     xcode: "14.2.0"
+  #   resource_class: macos.m1.medium.gen1
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #         at: ~/
+  #     - run:
+  #         name: smoketest MacOS M1 version
+  #         command: |
+  #           tar -xvzf release-assets/pskctl_Darwin_arm64.tar.gz
+  #           ./pskctl version | grep ${CIRCLE_TAG}
 
   smoke test windows:
     executor:
@@ -184,10 +185,10 @@ workflows:
           requires:
             - release
           filters: *on-tag-release
-      - smoke test macos-m1:
-          requires:
-            - release
-          filters: *on-tag-release
+      # - smoke test macos-m1:
+      #     requires:
+      #       - release
+      #     filters: *on-tag-release
       - smoke test linux-intel:
           requires:
             - release
@@ -212,7 +213,7 @@ workflows:
             - op/env
           requires:
             - smoke test macos-intel
-            - smoke test macos-m1
+            # - smoke test macos-m1
             - smoke test linux-intel
             - smoke test linux-arm
             - smoke test windows
