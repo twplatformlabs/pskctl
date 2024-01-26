@@ -80,7 +80,9 @@ jobs:
       - set-environment
       - run:
           name: goreleaser
-          command: curl -sL https://git.io/goreleaser | bash
+          command: |
+            git stash
+            curl -sL https://git.io/goreleaser | bash
 
 workflows:
 
