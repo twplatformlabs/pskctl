@@ -121,7 +121,7 @@ jobs:
           name: smoketest MacOS linux version
           command: |
             tar -xvzf release-assets/pskctl_Darwin_arm64.tar.gz
-            ./pskctl_Darwin_arm64/pskctl version | grep ${CIRCLE_TAG}
+            ./pskctl version | grep ${CIRCLE_TAG}
 
   # smoke-test-macos-m1:
   #   macos:
