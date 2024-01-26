@@ -71,7 +71,7 @@ jobs:
             set -exo pipefail
             ./pskctl version | grep "snapshot"
 
-  release-version:
+  release:
     description: publish release version
     executor: go-builder
     steps:
@@ -90,7 +90,8 @@ workflows:
         context: *context
         filters: *on-push-main
 
-    - release-version:
-        context: *context
-        requires:
-          - static code analysis
+  release-version:
+    jobs:
+      - release:
+          context: *context
+          filters: *on-tag-main
