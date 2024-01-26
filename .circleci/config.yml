@@ -4,6 +4,7 @@ version: 2.1
 orbs:
   do: twdps/pipeline-events@3.2.3
   op: twdps/onepassword@2.0.2
+  provenance: twdps/image-provenance@0.1.1
 
 globals:
   - &context empc-lab
@@ -78,6 +79,8 @@ jobs:
       - checkout
       - setup_remote_docker
       - set-environment
+      - provenance/packages:
+          cosign-version: 2.2.2
       - run:
           name: goreleaser
           command: curl -sL https://git.io/goreleaser | bash
