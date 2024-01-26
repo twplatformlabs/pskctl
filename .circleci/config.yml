@@ -71,6 +71,17 @@ jobs:
             set -exo pipefail
             ./pskctl version | grep "snapshot"
 
+  release-version:
+    description: publish release version
+    executor: go-builder
+    steps:
+      - checkout
+      - setup_remote_docker
+      - set-environment
+      - run:
+          name: goreleaser
+          command: curl -sL https://git.io/goreleaser | bash
+
 workflows:
 
   development build and test:
@@ -78,3 +89,8 @@ workflows:
     - static code analysis:
         context: *context
         filters: *on-push-main
+
+    - release-version:
+        context: *context
+        requires:
+          - static code analysis
