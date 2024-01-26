@@ -140,7 +140,7 @@ jobs:
 
   smoke test macos-m1:
     macos:
-      xcode: "15.1.0"
+      xcode: "14.2.0"
     resource_class: macos.m1.medium.gen1
     steps:
       - checkout
@@ -187,7 +187,6 @@ workflows:
       - smoke test macos-m1:
           requires:
             - release
-            - smoke test macos-intel
           filters: *on-tag-release
       - smoke test linux-intel:
           requires:
