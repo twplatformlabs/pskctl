@@ -163,7 +163,7 @@ jobs:
       - run:
           name: smoke test windows version
           command: |
-            unzip -u release-assets/pskctl_Windows_x86_64.zip
+            unzip -u release-assets/pskctl_Windows_amd64.zip
             ./pskctl version | grep ${CIRCLE_TAG}
 
 workflows:
@@ -187,6 +187,7 @@ workflows:
       - smoke test macos-m1:
           requires:
             - release
+            - smoke test macos-intel
           filters: *on-tag-release
       - smoke test linux-intel:
           requires:
