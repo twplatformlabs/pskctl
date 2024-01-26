@@ -35,10 +35,11 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: run stsatic code analysis
-          command: |
-            echo "static code analysis"
-            exit 1
+          name: golang lint
+          command: golangci-lint run ./...
+      - run:
+          name: check
+          command: exit 1
 
 workflows:
 
