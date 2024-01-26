@@ -30,6 +30,8 @@ commands:
 
   set-environment:
     steps:
+      - op/packages:
+          op-version: 2.24.0
       - op/env
       - op/tpl:
           out-path: cmd
