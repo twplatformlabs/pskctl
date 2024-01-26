@@ -26,6 +26,21 @@ executors:
     docker:
       - image: *executor-image
 
+commands:
+
+  set-environment:
+    steps:
+      - op/env
+      - op/tpl:
+          out-path: cmd
+          out-file: config.go
+      - op/write:
+          op-value: empc-lab/svc-cosign-private-key/notesPlain
+          out-file: cosign.key
+      - op/write:
+          op-value: empc-lab/svc-cosign-public-key/notesPlain
+          out-file: cosign.pub
+
 jobs:
 
   static code analysis:
@@ -34,11 +49,17 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - set-environment
       - run:
           name: golang lint
           command: golangci-lint run ./...
       - run:
-          name: check
+          name: secure practices scan
+          command: |
+            curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.18.2
+            gosec -exclude=G104 ./...
+      - run:
+          name: pause and try building
           command: exit 1
 
 workflows:

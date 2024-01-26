@@ -1,7 +1,7 @@
 package cmd
 
 const (
-	LoginClientId = "5TzP0V6D4p6oktZrkJ4GbRmUSHpPCx6Q"
+	LoginClientId = "{{ op://empc-lab/svc-auth0/pskctl-cli-client-id}}"
 	LoginScope    = "openid offline_access profile email"
 	LoginAudience = "https://pskctl.us.auth0.com/api/v2/"
 	IdpIssuerUrl  = "https://pskctl.us.auth0.com/"

@@ -63,9 +63,9 @@ func initConfig() {
 
 		exitOnError(os.MkdirAll(configFileLocation, 0700))
 		fmt.Println("created " + configFilePath)
-		emptyFile, err := os.Create(configFilePath)
+		emptyFile, err := os.Create(configFilePath) // #nosec G304
 		exitOnError(err)
-		emptyFile.Close()
+		emptyFile.Close() // #nosec G104
 	}
 	viper.WriteConfig() //nolint:errcheck
 	viper.AutomaticEnv()
