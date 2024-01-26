@@ -16,11 +16,13 @@ on-push-main: &on-push-main
   tags:
     ignore: /.*/
 
-on-tag-main: &on-tag-main
+on-tag-main: &on-tag-release
   branches:
     ignore: /.*/
   tags:
-    only: /^[0-9]+\.[0-9]+\.[0-9]+$/
+    only:
+      - /^([0-9]+(\.[0-9]+)+)-rc.[0-9]+$/
+      - /^((([0-9]+)\.([0-9]+)\.([0-9]+))?)$/
 
 executors:
   go-builder:
@@ -83,7 +85,72 @@ jobs:
           cosign-version: 2.2.2
       - run:
           name: goreleaser
-          command: curl -sL https://git.io/goreleaser | bash
+          command: |
+            curl -sL https://git.io/goreleaser | bash
+            mkdir release-assets && cp dist/*.tar.* release-assets && cp dist/*.zip release-assets
+      - run:
+          name: validate signature
+          command: cosign verify-blob -key cosign.pub -signature release-assets/pskctl_Linux_amd64.tar.gz.sig release-assets/pskctl_Linux_amd64.tar.gz
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/release-assets
+
+  # smoke-test-linux:
+  #   docker:
+  #     - image: cimg/base
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #         at: ~/
+  #     - run:
+  #         name: smoketest Linux amd64 version
+  #         command: |
+  #           tar -xvzf release-assets/dpsctl_Linux_i386.tar.gz
+  #           ./dpsctl version | grep ${CIRCLE_TAG}
+
+  smoke test macos-intel:
+    macos:
+      xcode: "15.1.0"
+    resource_class: macos.x86.medium.gen2
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: smoketest MacOS linux version
+          command: |
+            tar -xvzf release-assets/pskctl_Darwin_arm64.tar.gz
+            ./pskctl_Darwin_arm64/pskctl version | grep ${CIRCLE_TAG}
+
+  # smoke-test-macos-m1:
+  #   macos:
+  #     xcode: "15.1.0"
+  #   resource_class: macos.m1.medium.gen1
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #         at: ~/
+  #     - run:
+  #         name: smoketest MacOS linux version
+  #         command: |
+  #           tar -xvzf release-assets/pskctl_Darwin_arm64.tar.gz
+  #           ./pskctl_Darwin_arm64/pskctl version | grep ${CIRCLE_TAG}
+
+  # smoke-test-win:
+  #   executor:
+  #     name: win/default
+  #     shell: bash.exe
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #           at: ~/
+  #     - run:
+  #         name: smoke test windows version
+  #         command: |
+  #           unzip -u release-assets/dpsctl_Windows_x86_64.zip
+  #           ./dpsctl version | grep ${CIRCLE_TAG}
+
 
 workflows:
 
@@ -97,4 +164,35 @@ workflows:
     jobs:
       - release:
           context: *context
-          filters: *on-tag-main
+          filters: *on-tag-release
+
+      - smoke test macos-intel:
+          requires:
+            - release
+          filters: *on-tag-release
+
+      # - smoke-test-linux:
+      #     requires:
+      #       - publish (pre)release
+      #     filters: *on-tag-release
+      # - smoke-test-macos:
+      #     requires:
+      #       - publish (pre)release
+      #     filters: *on-tag-release
+      # - smoke-test-win:
+      #     requires:
+      #       - publish (pre)release
+      #     filters: *on-tag-release
+
+      - do/slack:
+          name: post lab-events
+          context: *context
+          channel: lab-events
+          message: New pskctl cli release
+          include-link: true
+          include-tag: true
+          before-message:
+            - op/env
+          requires:
+            - smoke test macos-intel
+          filters: *on-tag-release
