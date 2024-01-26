@@ -3,8 +3,9 @@ version: 2.1
 
 orbs:
   do: twdps/pipeline-events@3.2.3
-  op: twdps/onepassword@2.0.2
+  op: twdps/onepassword@2.0.6
   provenance: twdps/image-provenance@0.1.2
+  win: circleci/windows@5.0.0
 
 globals:
   - &context empc-lab
@@ -96,18 +97,32 @@ jobs:
           paths:
             - project/release-assets
 
-  # smoke-test-linux:
-  #   docker:
-  #     - image: cimg/base
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #         at: ~/
-  #     - run:
-  #         name: smoketest Linux amd64 version
-  #         command: |
-  #           tar -xvzf release-assets/dpsctl_Linux_i386.tar.gz
-  #           ./dpsctl version | grep ${CIRCLE_TAG}
+  smoke test linux-arm:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: arm.medium
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: smoketest Linux amd64 version
+          command: |
+            tar -xvzf release-assets/pskctl_Linux_arm64.tar.gz
+            ./pskctl version | grep ${CIRCLE_TAG}
+
+  smoke test linux-intel:
+    docker:
+      - image: cimg/base:2024.01
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: smoketest Linux amd64 version
+          command: |
+            tar -xvzf release-assets/pskctl_Linux_amd64.tar.gz
+            ./pskctl version | grep ${CIRCLE_TAG}
 
   smoke test macos-intel:
     macos:
@@ -118,39 +133,38 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: smoketest MacOS linux version
+          name: smoketest MacOS intel version
+          command: |
+            tar -xvzf release-assets/pskctl_Darwin_amd64.tar.gz
+            ./pskctl version | grep ${CIRCLE_TAG}
+
+  smoke test macos-m1:
+    macos:
+      xcode: "15.1.0"
+    resource_class: macos.m1.medium.gen1
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: smoketest MacOS M1 version
           command: |
             tar -xvzf release-assets/pskctl_Darwin_arm64.tar.gz
             ./pskctl version | grep ${CIRCLE_TAG}
 
-  # smoke-test-macos-m1:
-  #   macos:
-  #     xcode: "15.1.0"
-  #   resource_class: macos.m1.medium.gen1
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #         at: ~/
-  #     - run:
-  #         name: smoketest MacOS linux version
-  #         command: |
-  #           tar -xvzf release-assets/pskctl_Darwin_arm64.tar.gz
-  #           ./pskctl_Darwin_arm64/pskctl version | grep ${CIRCLE_TAG}
-
-  # smoke-test-win:
-  #   executor:
-  #     name: win/default
-  #     shell: bash.exe
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #           at: ~/
-  #     - run:
-  #         name: smoke test windows version
-  #         command: |
-  #           unzip -u release-assets/dpsctl_Windows_x86_64.zip
-  #           ./dpsctl version | grep ${CIRCLE_TAG}
-
+  smoke test windows:
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - attach_workspace:
+            at: ~/
+      - run:
+          name: smoke test windows version
+          command: |
+            unzip -u release-assets/pskctl_Windows_x86_64.zip
+            ./pskctl version | grep ${CIRCLE_TAG}
 
 workflows:
 
@@ -170,19 +184,22 @@ workflows:
           requires:
             - release
           filters: *on-tag-release
-
-      # - smoke-test-linux:
-      #     requires:
-      #       - publish (pre)release
-      #     filters: *on-tag-release
-      # - smoke-test-macos:
-      #     requires:
-      #       - publish (pre)release
-      #     filters: *on-tag-release
-      # - smoke-test-win:
-      #     requires:
-      #       - publish (pre)release
-      #     filters: *on-tag-release
+      - smoke test macos-m1:
+          requires:
+            - release
+          filters: *on-tag-release
+      - smoke test linux-intel:
+          requires:
+            - release
+          filters: *on-tag-release
+      - smoke test linux-arm:
+          requires:
+            - release
+          filters: *on-tag-release
+      - smoke test windows:
+          requires:
+            - release
+          filters: *on-tag-release
 
       - do/slack:
           name: post lab-events
@@ -195,4 +212,8 @@ workflows:
             - op/env
           requires:
             - smoke test macos-intel
+            - smoke test macos-m1
+            - smoke test linux-intel
+            - smoke test linux-arm
+            - smoke test windows
           filters: *on-tag-release
