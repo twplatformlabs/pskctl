@@ -4,7 +4,7 @@ version: 2.1
 orbs:
   do: twdps/pipeline-events@3.2.3
   op: twdps/onepassword@2.0.2
-  provenance: twdps/image-provenance@0.1.1
+  provenance: twdps/image-provenance@0.1.2
 
 globals:
   - &context empc-lab
