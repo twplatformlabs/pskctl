@@ -1,10 +1,11 @@
 package cmd
 
 type ClusterConfig struct {
-	clusterName 										string
-	hidden 													bool
-	clusterEndpoint 								string
-	base64CertificateAuthorityData  string
+	ClusterName 										string `yaml:"clusterName" json:"clusterName"`
+	Hidden 													bool   `yaml:"hidden" json:"hidden"`
+	ClusterEndpoint 								string `yaml:"clusterEndpoint" json:"clusterEndpoint"`
+	Base64CertificateAuthorityData  string `yaml:"base64CertificateAuthorityData" json:"base64CertificateAuthorityData"`
+	EfsCSIStorageID                 string `yaml:"efsCSIStorageID" json:"efsCSIStorageID"`
 }
 
 var ( 
