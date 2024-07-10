@@ -13,7 +13,7 @@ var listCmd = &cobra.Command{
 	Short:  "List resources",
 	Long:   `List resources of the specified resource type. For example: list clusters`,
 	DisableAutoGenTag: true,
-	Args:    cobra.ExactValidArgs(1),
+	Args:    cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("list command requires 1 valid resource parameter")
 	},
