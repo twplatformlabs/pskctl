@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"log"
+	//"log"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -44,7 +44,7 @@ func initConfig() {
 	viper.SetDefault("IdpIssuerUrl", IdpIssuerUrl)
 
 	viper.SetDefault("DefaultShowHidden", DefaultShowHidden)
-
+	viper.SetDefault("DefaultCluster", DefaultCluster)
 
 	viper.SetEnvPrefix(ConfigEnvDefault)
 	
@@ -77,9 +77,9 @@ func defaultConfigLocation() string {
 	return home + ConfigFileDefaultLocation
 }
 
-func exitOnError(err error) bool {
-	if err != nil {
-		log.Fatal(err)
-	}
-	return true
-}
+// func exitOnError(err error) bool {
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	return true
+// }

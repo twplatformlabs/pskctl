@@ -2,14 +2,14 @@
 version: 2.1
 
 orbs:
-  do: twdps/pipeline-events@3.2.3
-  op: twdps/onepassword@2.0.6
+  do: twdps/pipeline-events@4.1.0
+  op: twdps/onepassword@3.0.0
   provenance: twdps/image-provenance@0.1.2
   win: circleci/windows@5.0.0
 
 globals:
   - &context empc-lab
-  - &executor-image cimg/go:1.21.4
+  - &executor-image cimg/go:1.22.4
 
 on-push-main: &on-push-main
   branches:
@@ -34,16 +34,17 @@ commands:
 
   set-environment:
     steps:
-      - op/packages:
-          op-version: 2.24.0-1
+      - op/install:
+          op-version: 2.29.0
       - op/env
       - op/tpl:
+          tpl-path: tpl
+          tpl-file: config.go
           out-path: cmd
-          out-file: config.go
-      - op/write:
+      - op/write-to-file:
           op-value: empc-lab/svc-cosign-private-key/notesPlain
           out-file: cosign.key
-      - op/write:
+      - op/write-to-file:
           op-value: empc-lab/svc-cosign-public-key/notesPlain
           out-file: cosign.pub
 
@@ -75,73 +76,58 @@ jobs:
             set -exo pipefail
             ./pskctl version | grep "snapshot"
 
-  release:
-    description: publish release version
-    executor: go-builder
-    steps:
-      - checkout
-      - setup_remote_docker
-      - set-environment
-      - provenance/packages:
-          cosign-version: 2.2.2
-      - run:
-          name: goreleaser
-          command: |
-            curl -sL https://git.io/goreleaser | bash
-            mkdir release-assets && cp dist/*.tar.* release-assets && cp dist/*.zip release-assets
-      - run:
-          name: validate signature
-          command: cosign verify-blob -key cosign.pub -signature release-assets/pskctl_Linux_amd64.tar.gz.sig release-assets/pskctl_Linux_amd64.tar.gz
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/release-assets
+  # release:
+  #   description: publish release version
+  #   executor: go-builder
+  #   steps:
+  #     - checkout
+  #     - setup_remote_docker
+  #     - set-environment
+  #     - provenance/packages:
+  #         cosign-version: 2.2.4
+  #     - run:
+  #         name: goreleaser
+  #         command: |
+  #           curl -sL https://git.io/goreleaser | bash
+  #           mkdir release-assets && cp dist/*.tar.* release-assets && cp dist/*.zip release-assets
+  #     - run:
+  #         name: validate signature
+  #         command: cosign verify-blob -key cosign.pub -signature release-assets/pskctl_Linux_amd64.tar.gz.sig release-assets/pskctl_Linux_amd64.tar.gz
+  #     - persist_to_workspace:
+  #         root: ~/
+  #         paths:
+  #           - project/release-assets
 
-  smoke test linux-arm:
-    machine:
-      image: ubuntu-2204:current
-    resource_class: arm.medium
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: smoketest Linux amd64 version
-          command: |
-            tar -xvzf release-assets/pskctl_Linux_arm64.tar.gz
-            ./pskctl version | grep ${CIRCLE_TAG}
+  # smoke test linux-arm:
+  #   machine:
+  #     image: ubuntu-2204:current
+  #   resource_class: arm.medium
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #         at: ~/
+  #     - run:
+  #         name: smoketest Linux amd64 version
+  #         command: |
+  #           tar -xvzf release-assets/pskctl_Linux_arm64.tar.gz
+  #           ./pskctl version | grep ${CIRCLE_TAG}
 
-  smoke test linux-intel:
-    docker:
-      - image: cimg/base:2024.01
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: smoketest Linux amd64 version
-          command: |
-            tar -xvzf release-assets/pskctl_Linux_amd64.tar.gz
-            ./pskctl version | grep ${CIRCLE_TAG}
+  # smoke test linux-intel:
+  #   docker:
+  #     - image: cimg/base:2024.01
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #         at: ~/
+  #     - run:
+  #         name: smoketest Linux amd64 version
+  #         command: |
+  #           tar -xvzf release-assets/pskctl_Linux_amd64.tar.gz
+  #           ./pskctl version | grep ${CIRCLE_TAG}
 
-  smoke test macos-intel:
-    macos:
-      xcode: "15.1.0"
-    resource_class: macos.x86.medium.gen2
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: smoketest MacOS intel version
-          command: |
-            tar -xvzf release-assets/pskctl_Darwin_amd64.tar.gz
-            ./pskctl version | grep ${CIRCLE_TAG}
-
-  # not available on free tier
   # smoke test macos-m1:
   #   macos:
-  #     xcode: "14.2.0"
+  #     xcode: "15.4.0"
   #   resource_class: macos.m1.medium.gen1
   #   steps:
   #     - checkout
@@ -153,19 +139,19 @@ jobs:
   #           tar -xvzf release-assets/pskctl_Darwin_arm64.tar.gz
   #           ./pskctl version | grep ${CIRCLE_TAG}
 
-  smoke test windows:
-    executor:
-      name: win/default
-      shell: bash.exe
-    steps:
-      - checkout
-      - attach_workspace:
-            at: ~/
-      - run:
-          name: smoke test windows version
-          command: |
-            unzip -u release-assets/pskctl_Windows_amd64.zip
-            ./pskctl version | grep ${CIRCLE_TAG}
+  # smoke test windows:
+  #   executor:
+  #     name: win/default
+  #     shell: bash.exe
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #           at: ~/
+  #     - run:
+  #         name: smoke test windows version
+  #         command: |
+  #           unzip -u release-assets/pskctl_Windows_amd64.zip
+  #           ./pskctl version | grep ${CIRCLE_TAG}
 
 workflows:
 
@@ -175,46 +161,41 @@ workflows:
         context: *context
         filters: *on-push-main
 
-  release-version:
-    jobs:
-      - release:
-          context: *context
-          filters: *on-tag-release
+  # release-version:
+  #   jobs:
+  #     - release:
+  #         context: *context
+  #         filters: *on-tag-release
 
-      - smoke test macos-intel:
-          requires:
-            - release
-          filters: *on-tag-release
-      # - smoke test macos-m1:
-      #     requires:
-      #       - release
-      #     filters: *on-tag-release
-      - smoke test linux-intel:
-          requires:
-            - release
-          filters: *on-tag-release
-      - smoke test linux-arm:
-          requires:
-            - release
-          filters: *on-tag-release
-      - smoke test windows:
-          requires:
-            - release
-          filters: *on-tag-release
+  #     - smoke test macos-m1:
+  #         requires:
+  #           - release
+  #         filters: *on-tag-release
+  #     - smoke test linux-intel:
+  #         requires:
+  #           - release
+  #         filters: *on-tag-release
+  #     - smoke test linux-arm:
+  #         requires:
+  #           - release
+  #         filters: *on-tag-release
+  #     - smoke test windows:
+  #         requires:
+  #           - release
+  #         filters: *on-tag-release
 
-      - do/slack:
-          name: post lab-events
-          context: *context
-          channel: lab-events
-          message: New pskctl cli release
-          include-link: true
-          include-tag: true
-          before-message:
-            - op/env
-          requires:
-            - smoke test macos-intel
-            # - smoke test macos-m1
-            - smoke test linux-intel
-            - smoke test linux-arm
-            - smoke test windows
-          filters: *on-tag-release
+  #     - do/slack:
+  #         name: post lab-events
+  #         context: *context
+  #         channel: lab-events
+  #         message: New pskctl cli release
+  #         include-link: true
+  #         include-tag: true
+  #         before-message:
+  #           - op/env
+  #         requires:
+  #           - smoke test macos-m1
+  #           - smoke test linux-intel
+  #           - smoke test linux-arm
+  #           - smoke test windows
+  #         filters: *on-tag-release

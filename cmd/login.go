@@ -60,7 +60,7 @@ func submitCode(url string) {
 
 
 func submitHandler(url string) error {
-	fmt.Println("apctl will attempt to open a browser window where you can authenticate and verify your laptop.")
+	fmt.Println("pskctl will attempt to open a browser window where you can authenticate and verify your laptop.")
 	fmt.Println("If the window does not open, go to the link below.") //nolint:govet
 	fmt.Printf("%s\n", url)
 

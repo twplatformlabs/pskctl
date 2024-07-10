@@ -4,3 +4,4 @@ cosign.key
 cosign.key.tpl
 cosign.pub
 cosign.pub.tpl
+kubeconfig
