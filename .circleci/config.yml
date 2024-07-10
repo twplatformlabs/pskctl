@@ -76,27 +76,27 @@ jobs:
             set -exo pipefail
             ./pskctl version | grep "snapshot"
 
-  # release:
-  #   description: publish release version
-  #   executor: go-builder
-  #   steps:
-  #     - checkout
-  #     - setup_remote_docker
-  #     - set-environment
-  #     - provenance/packages:
-  #         cosign-version: 2.2.4
-  #     - run:
-  #         name: goreleaser
-  #         command: |
-  #           curl -sL https://git.io/goreleaser | bash
-  #           mkdir release-assets && cp dist/*.tar.* release-assets && cp dist/*.zip release-assets
-  #     - run:
-  #         name: validate signature
-  #         command: cosign verify-blob -key cosign.pub -signature release-assets/pskctl_Linux_amd64.tar.gz.sig release-assets/pskctl_Linux_amd64.tar.gz
-  #     - persist_to_workspace:
-  #         root: ~/
-  #         paths:
-  #           - project/release-assets
+  release:
+    description: publish release version
+    executor: go-builder
+    steps:
+      - checkout
+      - setup_remote_docker
+      - set-environment
+      - provenance/packages:
+          cosign-version: 2.2.4
+      - run:
+          name: goreleaser
+          command: |
+            curl -sL https://git.io/goreleaser | bash
+            mkdir release-assets && cp dist/*.tar.* release-assets && cp dist/*.zip release-assets
+      - run:
+          name: validate signature
+          command: cosign verify-blob -key cosign.pub -signature release-assets/pskctl_Linux_amd64.tar.gz.sig release-assets/pskctl_Linux_amd64.tar.gz
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/release-assets
 
   # smoke test linux-arm:
   #   machine:
@@ -161,41 +161,41 @@ workflows:
         context: *context
         filters: *on-push-main
 
-  # release-version:
-  #   jobs:
-  #     - release:
-  #         context: *context
-  #         filters: *on-tag-release
+  release-version:
+    jobs:
+      - release:
+          context: *context
+          filters: *on-tag-release
 
-  #     - smoke test macos-m1:
-  #         requires:
-  #           - release
-  #         filters: *on-tag-release
-  #     - smoke test linux-intel:
-  #         requires:
-  #           - release
-  #         filters: *on-tag-release
-  #     - smoke test linux-arm:
-  #         requires:
-  #           - release
-  #         filters: *on-tag-release
-  #     - smoke test windows:
-  #         requires:
-  #           - release
-  #         filters: *on-tag-release
+      # - smoke test macos-m1:
+      #     requires:
+      #       - release
+      #     filters: *on-tag-release
+      # - smoke test linux-intel:
+      #     requires:
+      #       - release
+      #     filters: *on-tag-release
+      # - smoke test linux-arm:
+      #     requires:
+      #       - release
+      #     filters: *on-tag-release
+      # - smoke test windows:
+      #     requires:
+      #       - release
+      #     filters: *on-tag-release
 
-  #     - do/slack:
-  #         name: post lab-events
-  #         context: *context
-  #         channel: lab-events
-  #         message: New pskctl cli release
-  #         include-link: true
-  #         include-tag: true
-  #         before-message:
-  #           - op/env
-  #         requires:
-  #           - smoke test macos-m1
-  #           - smoke test linux-intel
-  #           - smoke test linux-arm
-  #           - smoke test windows
-  #         filters: *on-tag-release
+      # - do/slack:
+      #     name: post lab-events
+      #     context: *context
+      #     channel: lab-events
+      #     message: New pskctl cli release
+      #     include-link: true
+      #     include-tag: true
+      #     before-message:
+      #       - op/env
+      #     requires:
+      #       - smoke test macos-m1
+      #       - smoke test linux-intel
+      #       - smoke test linux-arm
+      #       - smoke test windows
+      #     filters: *on-tag-release
