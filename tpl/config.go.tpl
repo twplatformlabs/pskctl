@@ -11,18 +11,18 @@ type ClusterConfig struct {
 var ( 
 	clustersList = []ClusterConfig{ 
 		{
-			clusterName: "sbx-i01-aws-us-east-1",
-			hidden: true,
-			clusterEndpoint: "{{ op://empc-lab/psk-aws-sbx-i01-aws-us-east-1/cluster-url }}",  
-			base64CertificateAuthorityData: "{{ op://empc-lab/psk-aws-sbx-i01-aws-us-east-1/base64-certificate-authority-data }}",
-			efsCSIStorageID: "{{ op://empc-lab/psk-aws-sbx-i01-aws-us-east-1/eks-efs-csi-storage-id }}",
+			ClusterName: "sbx-i01-aws-us-east-1",
+			Hidden: true,
+			ClusterEndpoint: "{{ op://empc-lab/psk-aws-sbx-i01-aws-us-east-1/cluster-url }}",  
+			Base64CertificateAuthorityData: "{{ op://empc-lab/psk-aws-sbx-i01-aws-us-east-1/base64-certificate-authority-data }}",
+			EfsCSIStorageID: "{{ op://empc-lab/psk-aws-sbx-i01-aws-us-east-1/eks-efs-csi-storage-id }}",
 		},
 		{
-			clusterName: "prod-i01-aws-us-east-2",
-			hidden: false,
-			clusterEndpoint: "{{ op://empc-lab/psk-aws-prod-i01-aws-us-east-2/cluster-url }}",
-			base64CertificateAuthorityData: "{{ op://empc-lab/psk-aws-prod-i01-aws-us-east-2/base64-certificate-authority-data }}",
-			efsCSIStorageID: "{{ op://empc-lab/psk-aws-prod-i01-aws-us-east-2/eks-efs-csi-storage-id }}",
+			ClusterName: "prod-i01-aws-us-east-2",
+			Hidden: false,
+			ClusterEndpoint: "{{ op://empc-lab/psk-aws-prod-i01-aws-us-east-2/cluster-url }}",
+			Base64CertificateAuthorityData: "{{ op://empc-lab/psk-aws-prod-i01-aws-us-east-2/base64-certificate-authority-data }}",
+			EfsCSIStorageID: "{{ op://empc-lab/psk-aws-prod-i01-aws-us-east-2/eks-efs-csi-storage-id }}",
 		},
 	}
 )
