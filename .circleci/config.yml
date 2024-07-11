@@ -98,32 +98,32 @@ jobs:
           paths:
             - project/release-assets
 
-  # smoke test linux-arm:
-  #   machine:
-  #     image: ubuntu-2204:current
-  #   resource_class: arm.medium
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #         at: ~/
-  #     - run:
-  #         name: smoketest Linux amd64 version
-  #         command: |
-  #           tar -xvzf release-assets/pskctl_Linux_arm64.tar.gz
-  #           ./pskctl version | grep ${CIRCLE_TAG}
+  smoke test linux-arm:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: arm.medium
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: smoketest Linux amd64 version
+          command: |
+            tar -xvzf release-assets/pskctl_Linux_arm64.tar.gz
+            ./pskctl version | grep ${CIRCLE_TAG}
 
-  # smoke test linux-intel:
-  #   docker:
-  #     - image: cimg/base:2024.01
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #         at: ~/
-  #     - run:
-  #         name: smoketest Linux amd64 version
-  #         command: |
-  #           tar -xvzf release-assets/pskctl_Linux_amd64.tar.gz
-  #           ./pskctl version | grep ${CIRCLE_TAG}
+  smoke test linux-intel:
+    docker:
+      - image: cimg/base:2024.01
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: smoketest Linux amd64 version
+          command: |
+            tar -xvzf release-assets/pskctl_Linux_amd64.tar.gz
+            ./pskctl version | grep ${CIRCLE_TAG}
 
   # smoke test macos-m1:
   #   macos:
@@ -171,14 +171,14 @@ workflows:
       #     requires:
       #       - release
       #     filters: *on-tag-release
-      # - smoke test linux-intel:
-      #     requires:
-      #       - release
-      #     filters: *on-tag-release
-      # - smoke test linux-arm:
-      #     requires:
-      #       - release
-      #     filters: *on-tag-release
+      - smoke test linux-intel:
+          requires:
+            - release
+          filters: *on-tag-release
+      - smoke test linux-arm:
+          requires:
+            - release
+          filters: *on-tag-release
       # - smoke test windows:
       #     requires:
       #       - release
