@@ -125,33 +125,33 @@ jobs:
             tar -xvzf release-assets/pskctl_Linux_amd64.tar.gz
             ./pskctl version | grep ${CIRCLE_TAG}
 
-  # smoke test macos-m1:
-  #   macos:
-  #     xcode: "15.4.0"
-  #   resource_class: macos.m1.medium.gen1
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #         at: ~/
-  #     - run:
-  #         name: smoketest MacOS M1 version
-  #         command: |
-  #           tar -xvzf release-assets/pskctl_Darwin_arm64.tar.gz
-  #           ./pskctl version | grep ${CIRCLE_TAG}
+  smoke test macos-m1:
+    macos:
+      xcode: "15.4.0"
+    resource_class: macos.m1.medium.gen1
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: smoketest MacOS M1 version
+          command: |
+            tar -xvzf release-assets/pskctl_Darwin_arm64.tar.gz
+            ./pskctl version | grep ${CIRCLE_TAG}
 
-  # smoke test windows:
-  #   executor:
-  #     name: win/default
-  #     shell: bash.exe
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #           at: ~/
-  #     - run:
-  #         name: smoke test windows version
-  #         command: |
-  #           unzip -u release-assets/pskctl_Windows_amd64.zip
-  #           ./pskctl version | grep ${CIRCLE_TAG}
+  smoke test windows:
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - attach_workspace:
+            at: ~/
+      - run:
+          name: smoke test windows version
+          command: |
+            unzip -u release-assets/pskctl_Windows_amd64.zip
+            ./pskctl version | grep ${CIRCLE_TAG}
 
 workflows:
 
@@ -167,10 +167,10 @@ workflows:
           context: *context
           filters: *on-tag-release
 
-      # - smoke test macos-m1:
-      #     requires:
-      #       - release
-      #     filters: *on-tag-release
+      - smoke test macos-m1:
+          requires:
+            - release
+          filters: *on-tag-release
       - smoke test linux-intel:
           requires:
             - release
@@ -179,10 +179,10 @@ workflows:
           requires:
             - release
           filters: *on-tag-release
-      # - smoke test windows:
-      #     requires:
-      #       - release
-      #     filters: *on-tag-release
+      - smoke test windows:
+          requires:
+            - release
+          filters: *on-tag-release
 
       # - do/slack:
       #     name: post lab-events
