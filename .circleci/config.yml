@@ -97,7 +97,6 @@ jobs:
           root: ~/
           paths:
             - project/release-assets
-      - do/gren
 
   smoke test linux-arm:
     machine:
@@ -183,6 +182,16 @@ workflows:
       - smoke test windows:
           requires:
             - release
+          filters: *on-tag-release
+
+      - do/gren-release:
+          before-release:
+            - op/env
+          requires:
+            - smoke test macos-m1
+            - smoke test linux-intel
+            - smoke test linux-arm
+            - smoke test windows
           filters: *on-tag-release
 
       - do/slack:
