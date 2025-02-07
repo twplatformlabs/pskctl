@@ -97,7 +97,7 @@ jobs:
           root: ~/
           paths:
             - project/release-assets
-      - do/gren-release
+      - do/gren
 
   smoke test linux-arm:
     machine:
