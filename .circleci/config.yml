@@ -185,6 +185,8 @@ workflows:
           filters: *on-tag-release
 
       - do/gren-release:
+          name: generate github release
+          context: *context
           before-release:
             - op/env
           requires:
