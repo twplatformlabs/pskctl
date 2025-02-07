@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  do: twdps/pipeline-events@4.1.0
+  do: twdps/pipeline-events@5.0.1
   op: twdps/onepassword@3.0.0
   provenance: twdps/image-provenance@0.1.2
   win: circleci/windows@5.0.0
@@ -35,7 +35,7 @@ commands:
   set-environment:
     steps:
       - op/install:
-          op-version: 2.29.0
+          op-version: 2.30.0
       - op/env
       - op/tpl:
           tpl-path: tpl
@@ -184,18 +184,18 @@ workflows:
             - release
           filters: *on-tag-release
 
-      # - do/slack:
-      #     name: post lab-events
-      #     context: *context
-      #     channel: lab-events
-      #     message: New pskctl cli release
-      #     include-link: true
-      #     include-tag: true
-      #     before-message:
-      #       - op/env
-      #     requires:
-      #       - smoke test macos-m1
-      #       - smoke test linux-intel
-      #       - smoke test linux-arm
-      #       - smoke test windows
-      #     filters: *on-tag-release
+      - do/slack:
+          name: post slack notification
+          context: *context
+          channel: lab-events
+          message: New pskctl cli release
+          include-link: true
+          include-tag: true
+          before-message:
+            - op/env
+          requires:
+            - smoke test macos-m1
+            - smoke test linux-intel
+            - smoke test linux-arm
+            - smoke test windows
+          filters: *on-tag-release
