@@ -17,10 +17,10 @@ builds:
         goarch: arm64
     binary: pskctl
     ldflags:
-      - -s -w -X github.com/ThoughtWorks-DPS/pskctl/cmd.Version={{.Version}}
+      - -s -w -X github.com/twplatformlabs/pskctl/cmd.Version={{.Version}}
 signs:
   - cmd: cosign
-    stdin: '{{ .Env.COSIGN_PWD }}'
+    stdin: '{{ .Env.COSIGN_PASSWORD }}'
     args: ["sign-blob", "-y", "--key=cosign.key", "--output-signature=${signature}", "${artifact}"]
     artifacts: all
 archives:

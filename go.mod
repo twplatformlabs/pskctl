@@ -1,4 +1,4 @@
-module github.com/ThoughtWorks-DPS/pskctl
+module github.com/twplatformlabs/pskctl
 
 go 1.22.4
 

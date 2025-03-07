@@ -13,22 +13,22 @@ var (
 		{
 			ClusterName: "sbx-i01-aws-us-east-1",
 			Hidden: true,
-			ClusterEndpoint: "{{ op://empc-lab/psk-aws-sbx-i01-aws-us-east-1/cluster-url }}",  
-			Base64CertificateAuthorityData: "{{ op://empc-lab/psk-aws-sbx-i01-aws-us-east-1/base64-certificate-authority-data }}",
-			EfsCSIStorageID: "{{ op://empc-lab/psk-aws-sbx-i01-aws-us-east-1/eks-efs-csi-storage-id }}",
+			ClusterEndpoint: "{{ op://platform/sbx-i01-aws-us-east-1/cluster-url }}",  
+			Base64CertificateAuthorityData: "{{ op://platform/sbx-i01-aws-us-east-1/certificate-authority-data-base64 }}",
+			EfsCSIStorageID: "{{ op://platform/sbx-i01-aws-us-east-1/eks-efs-csi-storage-id }}",
 		},
 		{
 			ClusterName: "prod-i01-aws-us-east-2",
 			Hidden: false,
-			ClusterEndpoint: "{{ op://empc-lab/psk-aws-prod-i01-aws-us-east-2/cluster-url }}",
-			Base64CertificateAuthorityData: "{{ op://empc-lab/psk-aws-prod-i01-aws-us-east-2/base64-certificate-authority-data }}",
-			EfsCSIStorageID: "{{ op://empc-lab/psk-aws-prod-i01-aws-us-east-2/eks-efs-csi-storage-id }}",
+			ClusterEndpoint: "{{ op://platform/prod-i01-aws-us-east-2/cluster-url }}",
+			Base64CertificateAuthorityData: "{{ op://platform/prod-i01-aws-us-east-2/certificate-authority-data-base64 }}",
+			EfsCSIStorageID: "{{ op://platform/prod-i01-aws-us-east-2/eks-efs-csi-storage-id }}",
 		},
 	}
 )
 
 const (
-	LoginClientId = "{{ op://empc-lab/svc-auth0/pskctl-cli-client-id }}"
+	LoginClientId = "{{ op://platform/svc-auth0/pskctl-cli-client-id }}"
 	LoginScope    = "openid offline_access profile email"
 	LoginAudience = "https://pskctl.us.auth0.com/api/v2/"
 	IdpIssuerUrl  = "https://pskctl.us.auth0.com/"

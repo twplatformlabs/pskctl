@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/ThoughtWorks-DPS/pskctl/clients"
-	"github.com/ThoughtWorks-DPS/pskctl/clients/models"
+	"github.com/twplatformlabs/pskctl/clients"
+	"github.com/twplatformlabs/pskctl/clients/models"
 	"errors"
 	"fmt"
 	"log"

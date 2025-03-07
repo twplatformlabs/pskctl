@@ -4,7 +4,7 @@ import (
   "encoding/json"
 	"io"
 	"fmt"
-	"github.com/ThoughtWorks-DPS/pskctl/clients/models"
+	"github.com/twplatformlabs/pskctl/clients/models"
 	"net/http"
 	"log"
 	"strings"

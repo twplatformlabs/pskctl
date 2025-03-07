@@ -8,7 +8,7 @@ orbs:
   win: circleci/windows@5.0.0
 
 globals:
-  - &context empc-lab
+  - &context platform
   - &executor-image cimg/go:1.22.4
 
 on-push-main: &on-push-main
@@ -42,10 +42,10 @@ commands:
           tpl-file: config.go
           out-path: cmd
       - op/write-to-file:
-          op-value: empc-lab/svc-cosign-private-key/notesPlain
+          op-value: platform/svc-cosign-private-key/notesPlain
           out-file: cosign.key
       - op/write-to-file:
-          op-value: empc-lab/svc-cosign-public-key/notesPlain
+          op-value: platform/svc-cosign-public-key/notesPlain
           out-file: cosign.pub
 
 jobs:
@@ -184,27 +184,18 @@ workflows:
             - release
           filters: *on-tag-release
 
-      - do/gren-release:
-          name: generate github release
+      - do/gh-release:
+          name: generate release notes
           context: *context
+          notes-from-file: release.md
+          include-commit-msg: true
           before-release:
             - op/env
-          requires:
-            - smoke test macos-m1
-            - smoke test linux-intel
-            - smoke test linux-arm
-            - smoke test windows
-          filters: *on-tag-release
-
-      - do/slack:
-          name: post slack notification
-          context: *context
-          channel: lab-events
-          message: New pskctl cli release
-          include-link: true
-          include-tag: true
-          before-message:
-            - op/env
+            - do/slack-bot:
+                channel: lab-events
+                message: Release pskctl
+                include-link: true
+                include-tag: true
           requires:
             - smoke test macos-m1
             - smoke test linux-intel

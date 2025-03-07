@@ -1,6 +1,6 @@
 package main
 
-import "github.com/ThoughtWorks-DPS/pskctl/cmd"
+import "github.com/twplatformlabs/pskctl/cmd"
 
 func main() {
   cmd.Execute()
