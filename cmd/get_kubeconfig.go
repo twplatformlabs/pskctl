@@ -3,11 +3,6 @@ package cmd
 import (
 	"fmt"
 	"encoding/base64"
-	//"runtime"
-	//"os/exec"
-	//"dpsctl/clients"
-	//"dpsctl/clients/models"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/tools/clientcmd/api"

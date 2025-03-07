@@ -7,8 +7,8 @@ import (
 
 var getCmd = &cobra.Command{
 	Use:               "get",
-	Short:             "Get dpsctl configuration values",
-	Long:              `Write dpsctl configuration values to stdout`,
+	Short:             "Get pskctl configuration values",
+	Long:              `Write pskctl configuration values to stdout`,
 	DisableAutoGenTag: true,
 	Args:              cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 	Run: func(cmd *cobra.Command, args []string) {
