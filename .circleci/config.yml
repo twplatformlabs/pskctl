@@ -9,7 +9,7 @@ orbs:
 
 globals:
   - &context platform
-  - &executor-image cimg/go:1.22.4
+  - &executor-image cimg/go:1.24.1
 
 on-push-main: &on-push-main
   branches:
@@ -63,7 +63,7 @@ jobs:
       - run:
           name: secure practices scan
           command: |
-            curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.18.2
+            curl -sfL https://raw.githubusercontent.com/securego/gosec/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.22.2
             gosec -exclude=G104 ./...
       - run:
           name: build test
