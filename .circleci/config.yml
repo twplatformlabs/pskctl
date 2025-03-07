@@ -184,18 +184,13 @@ workflows:
             - release
           filters: *on-tag-release
 
-      - do/gh-release:
-          name: generate release notes
-          context: *context
-          notes-from-file: release.md
-          include-commit-msg: true
-          before-release:
+      - do/slack-bot:
+          channel: lab-events
+          message: Release pskctl
+          include-link: true
+          include-tag: true
+          before-message:
             - op/env
-            - do/slack-bot:
-                channel: lab-events
-                message: Release pskctl
-                include-link: true
-                include-tag: true
           requires:
             - smoke test macos-m1
             - smoke test linux-intel
