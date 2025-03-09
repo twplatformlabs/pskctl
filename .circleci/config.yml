@@ -185,6 +185,7 @@ workflows:
           filters: *on-tag-release
 
       - do/slack:
+          context: *context
           channel: lab-events
           message: Release pskctl
           include-link: true
