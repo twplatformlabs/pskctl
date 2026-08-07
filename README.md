@@ -17,7 +17,6 @@ Platform starter kits control plane cli.
 Download the latest version from [releases](https://github.com/twplatformlabs/pskctl/releases).  
 
 Login to generate local access credentials. Reference example based on oauth2-oidc device-auth-flow managed by auth0.com and with Social integration to GitHub to provide authn and authz through a teams membership claim.  
-
 ```bash
 pskctl login
 ```
